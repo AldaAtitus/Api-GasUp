@@ -41,8 +41,11 @@ public class PointService {
     public void deleteById(UUID id) throws Exception {
         var pointInBD = repository.findById(id).orElseThrow(() -> new Exception("Ponto não encontrado"));
         User userAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!pointInBD.getUser().getId().equals(userAuth.getId()))
-            throw new Exception("Você não possuí permissão para essa ação");
+        if (userAuth.getType() != UserType.Admin) {
+            if (!pointInBD.getUser().getId().equals(userAuth.getId())) {
+                throw new Exception("Você não possui permissão para essa ação");
+            }
+        }
         repository.deleteById(id);
     }
 
