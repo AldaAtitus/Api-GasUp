@@ -149,6 +149,25 @@ public class AuthController {
         return ResponseEntity.ok(userAuth);
     }
 
+    @PostMapping("/signup-admin")
+    public ResponseEntity<?> postSignupAdmin(@RequestBody SignupDTO dto) {
+        try {
+            User newUser = new User();
+            BeanUtils.copyProperties(dto, newUser);
+            newUser.setType(UserType.Admin); // Define como Admin diretamente
+
+            if (dto.photo() != null && !dto.photo().isEmpty()) {
+                newUser.setPhoto(dto.photo());
+            }
+
+            userService.save(newUser);
+            return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> exceptionHandler(Exception ex) {
         String message = ex.getMessage().replace("\r\n", "");
