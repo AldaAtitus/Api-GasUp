@@ -16,4 +16,6 @@ public interface FavoritoRepository extends JpaRepository<FavoritoEntity, UUID> 
     boolean existsByUserIdAndPointId(UUID userId, UUID pointId);
 
     void deleteByUserIdAndPointId(UUID userId, UUID pointId);
+
+    void deleteByPointId(UUID pointId);
 }
