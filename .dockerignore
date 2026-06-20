@@ -1,0 +1,11 @@
+# Ignora arquivos desnecessários para a imagem Docker
+target/
+.mvn/wrapper/maven-wrapper.jar
+.git/
+.idea/
+*.iml
+*.log
+.env
+.gitignore
+README.md
+HELP.md
