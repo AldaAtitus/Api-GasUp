@@ -8,6 +8,8 @@ RUN chmod +x mvnw
 
 RUN ./mvnw clean package -DskipTests
 
+RUN find target -name "*.jar" -exec cp {} app.jar \;
+
 EXPOSE 8080
 
-CMD ["java", "-jar", "target/*.jar"]
+CMD ["java", "-jar", "app.jar"]
