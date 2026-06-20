@@ -2,9 +2,7 @@ package br.edu.atitus.placa_pai.apisgasup.services;
 
 import br.edu.atitus.placa_pai.apisgasup.dtos.PointDTO;
 import br.edu.atitus.placa_pai.apisgasup.entities.*;
-import br.edu.atitus.placa_pai.apisgasup.entities.PointEntity;
-import br.edu.atitus.placa_pai.apisgasup.entities.User;
-import br.edu.atitus.placa_pai.apisgasup.repositories.PointRepository;
+import br.edu.atitus.placa_pai.apisgasup.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,10 +13,11 @@ import java.util.UUID;
 @Service
 public class PointService {
     private final PointRepository repository;
+    private final FavoritoRepository favoritoRepository;
 
-    public PointService(PointRepository repository) {
-        super();
+    public PointService(PointRepository repository, FavoritoRepository favoritoRepository) {
         this.repository = repository;
+        this.favoritoRepository = favoritoRepository;
     }
 
     @Transactional
@@ -27,11 +26,12 @@ public class PointService {
             throw new Exception("Objeto Nulo");
 
         if (point.getDescription() == null || point.getDescription().isEmpty())
-            throw new Exception("Descrição Inválida");
+            throw new Exception("Descricao Invalida");
         if (point.getLatitude() < -90 || point.getLatitude() > 90)
-            throw new Exception("Latitude Inválida");
+            throw new Exception("Latitude Invalida");
         if (point.getLongitude() < -180 || point.getLongitude() > 180)
-            throw new Exception("Longitude Inválida");
+            throw new Exception("Longitude Invalida");
+
         User userAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         point.setUser(userAuth);
         return repository.save(point);
@@ -39,28 +39,35 @@ public class PointService {
 
     @Transactional
     public void deleteById(UUID id) throws Exception {
-        var pointInBD = repository.findById(id).orElseThrow(() -> new Exception("Ponto não encontrado"));
+        var pointInBD = repository.findById(id)
+                .orElseThrow(() -> new Exception("Ponto nao encontrado"));
+
         User userAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Admin pode deletar qualquer ponto
         if (userAuth.getType() != UserType.Admin) {
             if (!pointInBD.getUser().getId().equals(userAuth.getId())) {
-                throw new Exception("Você não possui permissão para essa ação");
+                throw new Exception("Voce nao possui permissao para essa acao");
             }
         }
+        favoritoRepository.deleteByPointId(id);
         repository.deleteById(id);
     }
 
-    public List<PointEntity>  findAll() {
+    public List<PointEntity> findAll() {
         return repository.findAll();
     }
 
     @Transactional
     public PointEntity update(UUID id, PointDTO dto) throws Exception {
         var point = repository.findById(id)
-                .orElseThrow(() -> new Exception("Ponto não encontrado"));
+                .orElseThrow(() -> new Exception("Ponto nao encontrado"));
 
         User userAuth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!point.getUser().getId().equals(userAuth.getId()))
-            throw new Exception("Você não possui permissão para essa ação");
+
+        if (!point.getUser().getId().equals(userAuth.getId())) {
+            throw new Exception("Voce nao possui permissao para essa acao");
+        }
 
         point.setDescription(dto.description());
         point.setLatitude(dto.latitude());
