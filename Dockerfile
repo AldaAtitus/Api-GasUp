@@ -1,5 +1,5 @@
 # Dockerfile para a API GasUp
-FROM openjdk:25-slim
+FROM openjdk:25-jdk
 
 # Define o diretório de trabalho
 WORKDIR /app
