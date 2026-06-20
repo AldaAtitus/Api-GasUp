@@ -29,6 +29,10 @@ public class AuthController {
         User newUser = new User();
         BeanUtils.copyProperties(dto, newUser);
         newUser.setType(UserType.Common);
+        // Se a foto foi enviada, salva
+        if (dto.photo() != null && !dto.photo().isEmpty()) {
+            newUser.setPhoto(dto.photo());
+        }
         userService.save(newUser);
         return ResponseEntity.status(201).body(newUser);
     }

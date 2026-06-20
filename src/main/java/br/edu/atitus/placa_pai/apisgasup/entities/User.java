@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+@SuppressWarnings("ALL")
 @Entity
 @Table(name = "tb_user")
 
@@ -25,6 +26,9 @@ public class User implements UserDetails{
 
     @Column(length = 100, nullable = false)
     private String password;
+
+    @Column(length = 500)
+    private String photo; // URL da foto
 
     @Column(nullable = false)
     @Enumerated(EnumType.ORDINAL)
@@ -53,6 +57,9 @@ public class User implements UserDetails{
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getPhoto() { return photo; }
+    public void setPhoto(String photo) { this.photo = photo; }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
