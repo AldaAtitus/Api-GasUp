@@ -31,7 +31,7 @@ public class AuthController {
     private final AuthenticationConfiguration auth;
 
     // Diretório onde as fotos serão salvas
-    private static final String UPLOAD_DIR = "uploads/photos/";
+    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/photos/";
 
     public AuthController(UserService userService, AuthenticationConfiguration auth) {
         this.userService = userService;
